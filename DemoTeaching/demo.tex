@@ -40,10 +40,28 @@
 	
 	Github profile: https://github.com/SeiryuZ
   \end{frame}
+  
+    \begin{frame}{Web development?}
+	Anything related to developing a web site for the internet or intranet.
+	
+	\pause
+	Typically, web development is divided into two:
+	
+	\pause
+	\begin{itemize}[<+->]
+		\item \textbf{Back-end}, Development of application on the server-side that accept requests from the user, and produce the correct output (Python, Ruby, Java, ........)  
+		
+		\item \textbf{Front-end}, Development of client-side application that allows user to interact with the web-site directly. (CSS, HTML, JS)
+		
+		\item Think of Back-end as house builder and Front-end as Interior design when you build a house
+	\end{itemize}
+    \end{frame}
+
+  
 %  \section{Motivation}
   \begin{frame}{Why web development?}
 
-	Q: We can develop application for users' PC easily now, why bother with web development?
+	Q: We can develop application for users' device "easily", why bother with web development?
 
 	\pause
 	\begin{itemize}[<+->]
@@ -57,19 +75,20 @@
 		
 		\item Offloading computations to much powerful, potentially infinite, resources (Cloud computing)
 		
+		\item Huge number of open source software that can be used
+		
 	\end{itemize}
-
-	\footnotetext[1]{http://www.internetlivestats.com/internet-users/}
+	\only<2->{\footnotetext[1]{http://www.internetlivestats.com/internet-users/}}
 
   \end{frame}
   
   \begin{frame}{That's all good, there has to be some downside, right?}
   	\pause
-	True, development is about trade-offs. For web, these are the pain points:
+	True. For web development, these are few of the pain points:
 	\pause
 	\begin{itemize}[<+->]
-		\item Deploying web application
-		\item Web development standard, especially front-end
+		\item Backend: Deploying web application
+		\item Frontend: Web development standard
   	\end{itemize}
   \end{frame}
   
@@ -88,9 +107,24 @@
 		\end{figure}
 	\end{center}
 
-	\footnotetext[1]{See http://caniuse.com}
-	\footnotetext[2]{See https://js.foundation}
-
-
+	\only<3->{\footnotetext[1]{See http://caniuse.com}}
+	\only<3->{\footnotetext[2]{See https://js.foundation}}
+  \end{frame}
+  
+  \begin{frame}{Future of Web Development Technology - Containerization}
+	Complex backend development requires huge number of inter-dependent technologies to run correctly. For example, database system, application server, file server, web server, cache service, data structure service and queue systems. 
+	
+	More concrete, stamps.co.id backend requires more than 50 libraries and technologies to run correctly. All of these libraries needs to be configured correctly for the web service to run. 
+	
+	In addition to that, correctly configuring all of these for multiple servers (Usually, web services have multiple hosts containing different services) are time consuming and error-prone, even with some automation.
+	
+	Containerization aims to solve this by allowing developers to package everything inside a containers. And target hosts, your server, only need to be able to run your containers. These abstractions would allow development and deployment with ease.
+	
+  \end{frame}
+  
+  \begin{frame}{Future of Web Development Technology - Web development standard}
+	JS Foundation, under The Linux Foundation, are pushing a new set of standards for web development, specifically on the Javascript ecosystem. The foundation is "blessing" some of the most important projects that  open web development relies on. 
+	
+	This move hopes to settle the debate on what tools to use, and help the community get organized in contributing towards the "blessed" projects. In the future, front-end web development might have better tools and universally agreed standards to make it easier to do development.
   \end{frame}
 \end{document}
