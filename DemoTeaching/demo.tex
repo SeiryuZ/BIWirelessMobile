@@ -1,8 +1,11 @@
 \documentclass{beamer}
 \usetheme{metropolis}
+\usepackage[font=footnotesize, labelfont=footnotesize]{caption}
+
 
 
 \title{Future of Web Development Technology}
+\subtitle{Demo teaching}
 \date{16 November 2016}
 \author{Steven "Steven"}
 \institute{BINUS INTERNATIONAL}
@@ -11,12 +14,83 @@
 \begin{document}
   \maketitle
   
-%  \section{First Section}
-  \begin{frame}{First Frame}
-    Hello, world!
+%  \section {Class organization}
+  \begin{frame}{Some basic rules}
+  	\begin{itemize}
+		\item Phone should be silent at all time
+		\item Laptop is okay
+		\item Questions, for this specific session, should be put on hold until the end of presentation
+		\item All slides and materials are available at github (goo.gl/Lb2VQQ) (Corrections to them are encouraged)
+	\end{itemize}
   \end{frame}
   
-    \begin{frame}{First Frame}
-    Hello, world!
+  \begin{frame}{Quick introduction}
+	Steven "Steven"
+	
+	Graduated from The University of Edinburgh (2016), Binus International (2012)
+	
+	Professionally worked on:
+	\begin{itemize}
+		\item stamps.co.id  (Everything)
+		\item go-jek.com (iOS alpha)
+		\item setipe.com  (iOS)
+		\item anomalicoffee.com (iOS, Web backend)
+		\item fotostruk.com (Upcoming)
+	\end{itemize}
+	
+	Github profile: https://github.com/SeiryuZ
+  \end{frame}
+%  \section{Motivation}
+  \begin{frame}{Why web development?}
+
+	Q: We can develop application for users' PC easily now, why bother with web development?
+
+	\pause
+	\begin{itemize}[<+->]
+	
+		\item Internet user is almost half of Earth's population (3,4b/46\% as of 1 June 2016)\footnotemark[1]
+			\begin{itemize}[<+->]
+				\item around 20\% of Indonesia population are connected to Internet (50m in 2016\footnotemark[1])
+			\end{itemize}
+			
+		\item Arguably, web have smaller permutation of end-user run time environments (Web browser, Web Client), but larger "user" when compared to desktop applications.
+		
+		\item Offloading computations to much powerful, potentially infinite, resources (Cloud computing)
+		
+	\end{itemize}
+
+	\footnotetext[1]{http://www.internetlivestats.com/internet-users/}
+
+  \end{frame}
+  
+  \begin{frame}{That's all good, there has to be some downside, right?}
+  	\pause
+	True, development is about trade-offs. For web, these are the pain points:
+	\pause
+	\begin{itemize}[<+->]
+		\item Deploying web application
+		\item Web development standard, especially front-end
+  	\end{itemize}
+  \end{frame}
+  
+  
+   \begin{frame}{Future of Web Development Technology}
+   	\pause
+	\begin{itemize}[<+->]
+		\item Backend: Containerization / Virtualization (Docker, Linux Containers)
+		\item Frontend: Better web standard \footnotemark[1] \footnotemark[2] 
+	\end{itemize}
+	\pause
+	\begin{center}
+		\begin{figure}
+		\includegraphics[scale=0.485]{images/standards.png}
+		\caption{xkcd.com}
+		\end{figure}
+	\end{center}
+
+	\footnotetext[1]{See http://caniuse.com}
+	\footnotetext[2]{See https://js.foundation}
+
+
   \end{frame}
 \end{document}
