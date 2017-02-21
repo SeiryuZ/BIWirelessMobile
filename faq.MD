@@ -27,4 +27,4 @@ A: For this class, I will only concerns myself with regards to the mobile applic
 A: During the project phases, there will be an allocated time for teams to review each others work. This peer review activity will be used to derive class participation marks
 
 #### Q: Can I develop game for the final project?
-A: On the assessment rubric, there are components that measures how well students integrate concepts learned during class sessions into the project. As mobile game development usually utilize game engines that does not apply the concepts I am going to teach, for the purpose of this class, I am going to reject game as the final project
+A: On the assessment rubric, there are components that measures how well students integrate concepts learned during class sessions into the project. As mobile game development usually utilize game engines that does not apply the concepts I am going to teach, for the purpose of this class, **I am going to reject game project**
