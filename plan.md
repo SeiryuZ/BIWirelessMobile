@@ -1,4 +1,5 @@
 Session plan 
+
 Week 1 - Preparations
 
 Week 2 - Activities
