@@ -17,6 +17,18 @@ A: It's hard to make sure everyone have access to a mac. If you want to ask lear
 ===
 ## Final project
 
+#### Q: What library/framework/sass/baas/etc you recommend for ... ?
+
+    ##### 1.Image
+        * Glide (https://github.com/bumptech/glide)
+
+    ##### 2. Database
+        * SQLite (https://developer.android.com/reference/android/database/sqlite/package-summary.html)
+        * Realm (https://realm.io/products/realm-mobile-database/)
+
+    ##### 3. Design
+        * Material design (https://developer.android.com/design/material/index.html)
+
 #### Q: Can we use third party libraries ? (i.e, tensorflow, Glide, butterknife)
 A: Yes, it is actually encouraged to use third party libraries to help with your development. Please do maintain a list of third party libraries and put attribution when appropriate(See their LICENSE)
 
