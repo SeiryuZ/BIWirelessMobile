@@ -126,6 +126,8 @@ Install this git for windows [here] (https://git-for-windows.github.io/) and fol
   ![Branch](DemoTeaching/images/branch.png)
 
 ####5. Commit files
+
+  the text says "Please make sure files you want to commit are checked" and "Write commit message"
   ![Commit](DemoTeaching/images/commit.png)
 
 ####6. Click publish
