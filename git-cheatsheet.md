@@ -5,6 +5,11 @@ Please note that if you have set up ssh key, you will not be asked username + pa
 After adding SSH key, make sure you are using ssh protocol (`git@github.com:SeiryuZ/BIWirelessMobile.git`) when cloning instead of https protocol (`https://github.com/SeiryuZ/BIWirelessMobile.git`)
 
 
+# Shortcuts
+
+1. [OSX / Linux] (https://github.com/SeiryuZ/BIWirelessMobile/blob/master/git-cheatsheet.md#for-osx--linux)
+2. [Windows] ()
+
 
 
 ## For OSX / Linux
@@ -58,6 +63,8 @@ cp ~/Desktop/my-awesome-final-project ~/dev/wireless-mobile/
   ```
   git status
   ```
+  
+###### <sub><sub>Bless you beautiful people who use OSX / Linux</sub></sub>
 
 
 ####7. Commit the files on the staging are
@@ -92,4 +99,29 @@ cp ~/Desktop/my-awesome-final-project ~/dev/wireless-mobile/
 
 ####10. You updated your project and want to update the pull request? Go to step 5
 
-###### <sub><sub>Bless you beautiful people who use OSX / Linux</sub></sub>
+
+
+
+
+------------------
+
+## For Windows
+
+#### I prefer typing on command lines
+Install this git for windows [here] (https://git-for-windows.github.io/) and follow the OSX / Linux steps [here] (https://github.com/SeiryuZ/BIWirelessMobile/blob/master/git-cheatsheet.md#for-osx--linux)
+
+#### I prefer clicking on things
+
+1. Install github for desktop [here] (https://desktop.github.com/)
+
+2. Clone 
+
+3. Add your projec to the folder you cloned into
+
+4. Make new branch
+
+5. Commit files
+
+6. Click publish
+
+7. New update?  Repeat step 5 ~ 6 and click sync
