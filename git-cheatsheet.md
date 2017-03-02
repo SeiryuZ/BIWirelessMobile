@@ -92,3 +92,4 @@ cp ~/Desktop/my-awesome-final-project ~/dev/wireless-mobile/
 
 10. You updated your project and want to update the pull request? Go to step 5
 
+###### <sub><sub>Bless you beautiful people who use OSX / Linux</sub></sub>
