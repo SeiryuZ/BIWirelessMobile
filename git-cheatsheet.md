@@ -8,7 +8,7 @@ After adding SSH key, make sure you are using ssh protocol (`git@github.com:Seir
 # Shortcuts
 
 1. [OSX / Linux] (https://github.com/SeiryuZ/BIWirelessMobile/blob/master/git-cheatsheet.md#for-osx--linux)
-2. [Windows] ()
+2. [Windows] (https://github.com/SeiryuZ/BIWirelessMobile/blob/master/git-cheatsheet.md#for-windows)
 
 
 
@@ -108,7 +108,7 @@ cp ~/Desktop/my-awesome-final-project ~/dev/wireless-mobile/
 ## For Windows
 
 ### I prefer typing on command lines
-Install this git for windows [here] (https://git-for-windows.github.io/) and follow the OSX / Linux steps [here]  (https://github.com/SeiryuZ/BIWirelessMobile/blob/master/git-cheatsheet.md#for-osx--linux) <sub><sub><sub>You beautiful creature</sub></sub></sub>
+Install this git for windows [here] (https://git-for-windows.github.io/) and follow the OSX / Linux steps [here]  (https://github.com/SeiryuZ/BIWirelessMobile/blob/master/git-cheatsheet.md#for-osx--linux) <sup><sup><sup><sup><sup>You beautiful creature</sup></sup></sup></sup></sup>
 
 ---
 
