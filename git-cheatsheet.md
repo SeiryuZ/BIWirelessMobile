@@ -107,21 +107,28 @@ cp ~/Desktop/my-awesome-final-project ~/dev/wireless-mobile/
 
 ## For Windows
 
-#### I prefer typing on command lines
-Install this git for windows [here] (https://git-for-windows.github.io/) and follow the OSX / Linux steps [here] (https://github.com/SeiryuZ/BIWirelessMobile/blob/master/git-cheatsheet.md#for-osx--linux)
+### I prefer typing on command lines
+Install this git for windows [here] (https://git-for-windows.github.io/) and follow the OSX / Linux steps [here]  (https://github.com/SeiryuZ/BIWirelessMobile/blob/master/git-cheatsheet.md#for-osx--linux) <sub><sub><sub>You beautiful creature</sub></sub></sub>
 
-#### I prefer clicking on things
+---
 
-1. Install github for desktop [here] (https://desktop.github.com/)
+### I prefer clicking on things
 
-2. Clone 
+####1. Install github for desktop [here] (https://desktop.github.com/)
 
-3. Add your projec to the folder you cloned into
+####2. Clone 
+  ![Clone](DemoTeaching/images/clone.png)
 
-4. Make new branch
 
-5. Commit files
+####3. Add your project to the folder you cloned into
 
-6. Click publish
+####4. Make new branch [Do not commit directly on master branch]
+  ![Branch](DemoTeaching/images/branch.png)
 
-7. New update?  Repeat step 5 ~ 6 and click sync
+####5. Commit files
+  ![Commit](DemoTeaching/images/commit.png)
+
+####6. Click publish
+  ![Publish](DemoTeaching/images/publish.png)
+
+####7. New update?  Repeat step 5 ~ 6 and click sync
