@@ -9,7 +9,7 @@ After adding SSH key, make sure you are using ssh protocol (`git@github.com:Seir
 
 ## For OSX / Linux
 
-1. Make sure you have cloned the repository
+####1. Make sure you have cloned the repository
 
   ```
 git clone [GITHUB address] [destination dir]
@@ -22,20 +22,20 @@ git clone git@github.com:SeiryuZ/BIWirelessMobile.git ~/dev/wireless-mobile
 git clone https@github.com:SeiryuZ/BIWirelessMobile.git 
 ```
 
-2. Copy your whole Android project to the working directory
+####2. Copy your whole Android project to the working directory
   ```
 # Or you can just drag and drop to the folder
 cp ~/Desktop/my-awesome-final-project ~/dev/wireless-mobile/
 ```
 
 
-3. Change working directory to the folder
+####3. Change working directory to the folder
   ```
   cd ~/dev/wireless-mobile/
   ```
 
 
-4. Make a new branch (Do not commit to master branch directly)
+####4. Make a new branch (Do not commit to master branch directly)
   ```
   git checkout -b [branch name]
   
@@ -43,7 +43,7 @@ cp ~/Desktop/my-awesome-final-project ~/dev/wireless-mobile/
   git checkout -b project-phase-1
   ```
 
-5. Add your files to the staging phase (Files are not committed yet)
+####5. Add your files to the staging phase (Files are not committed yet)
   ```
   # You can add files one by one
   git add [files]
@@ -53,14 +53,14 @@ cp ~/Desktop/my-awesome-final-project ~/dev/wireless-mobile/
   ```
   
   
-6. Validate that files on the staging area are correct, and want to be committed
+####6. Validate that files on the staging area are correct, and want to be committed
 
   ```
   git status
   ```
 
 
-7. Commit the files on the staging are
+####7. Commit the files on the staging are
 
    ```
    # This will start the editor of your choice, you can set it to vim / nano / atom / anything else 
@@ -73,7 +73,7 @@ cp ~/Desktop/my-awesome-final-project ~/dev/wireless-mobile/
   ![Git status](DemoTeaching/images/git-status.png)
 
 
-8. Push the commit to github 
+####8. Push the commit to github 
   ```
   git push
   
@@ -83,13 +83,13 @@ cp ~/Desktop/my-awesome-final-project ~/dev/wireless-mobile/
   ```
   
   
-9. Make a pull request on github
+####9. Make a pull request on github
   ![Pull request 1](DemoTeaching/images/pull-request-1.png)
   ---
   ![Pull request 2](DemoTeaching/images/pull-requestr-2.png)
 
   
 
-10. You updated your project and want to update the pull request? Go to step 5
+####10. You updated your project and want to update the pull request? Go to step 5
 
 ###### <sub><sub>Bless you beautiful people who use OSX / Linux</sub></sub>
