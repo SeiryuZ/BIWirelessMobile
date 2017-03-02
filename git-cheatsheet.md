@@ -70,6 +70,7 @@ cp ~/Desktop/my-awesome-final-project ~/dev/wireless-mobile/
    # Or you want to add commit message directly
    git commit -m "This is my awesome commit. Bug GO AWAY"
    ```
+  ![Git status](DemoTeaching/images/git-status.png)
 
 
 8. Push the commit to github 
@@ -83,8 +84,11 @@ cp ~/Desktop/my-awesome-final-project ~/dev/wireless-mobile/
   
   
 9. Make a pull request on github
-
+  ![Pull request 1](DemoTeaching/images/pull-request-1.png)
+  ---
+  ![Pull request 2](DemoTeaching/images/pull-requestr-2.png)
 
   
 
+10. You updated your project and want to update the pull request? Go to step 5
 
