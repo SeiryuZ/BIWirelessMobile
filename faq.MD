@@ -29,6 +29,12 @@ A: It's hard to make sure everyone have access to a mac. If you want to ask lear
 ##### 3. Design
   * Material design (https://developer.android.com/design/material/index.html)
 
+
+#### Q: What are some interesting encryption scheme to securely transmit stuff?
+A: There are many schemes, but I would suggest to learn about Android's keystore system and how you can use that to encrypt stuff. https://developer.android.com/training/articles/keystore.html 
+
+You can use the keys generated to build a universal public key list for your application and other user can send encrypted messages that only intended users can read. For more info see - [Public Key Crytography](https://en.wikipedia.org/wiki/Public-key_cryptography)
+
 #### Q: Can we use third party libraries ? (i.e, tensorflow, Glide, butterknife)
 A: Yes, it is actually encouraged to use third party libraries to help with your development. Please do maintain a list of third party libraries and put attribution when appropriate(See their LICENSE)
 
