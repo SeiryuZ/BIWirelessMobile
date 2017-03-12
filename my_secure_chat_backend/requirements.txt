@@ -1,0 +1,6 @@
+django==1.11b1
+djangorestframework==3.6.2
+
+
+django-extensions
+ipython
