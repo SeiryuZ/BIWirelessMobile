@@ -18,4 +18,9 @@ public class ChatList extends AppCompatActivity {
         Intent intent = new Intent(this, ChatDetails.class);
         startActivity(intent);
     }
+
+
+    public void refreshChat(View view) {
+        ChatRefresherService.startActionRefresh(this);
+    }
 }
