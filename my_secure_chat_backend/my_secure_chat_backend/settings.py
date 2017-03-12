@@ -128,3 +128,6 @@ REST_FRAMEWORK = {
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+DEBUG = False
+APPEND_SLASH = True
