@@ -6,30 +6,35 @@ package com.example.seiry.mysecurechat;
 
 public class Message {
     // This class will represent every single message we send/receive
-
-    private String sender;
-    private String recipient;
-
     private String message;
     private Long created;
     private Boolean isRead;
+    private int messageType;
 
-    public Message(String sender, String recipient, String message, Boolean isRead) {
-        this.sender = sender;
-        this.recipient = recipient;
+    // Type of message
+    public static class Type {
+        public static final int INCOMING = 1;
+        public static final int OUTGOING = 2;
+    }
+
+    public Message(String message, long created, Boolean isRead, int messageType) {
+        this.message = message;
+        this.created = created;
+        this.isRead = isRead;
+        this.messageType = messageType;
+    }
+
+    public Message(String message, Boolean isRead, int messageType) {
         this.message = message;
 
-        // Unix timestamp
+        // Not provided time, current time
         this.created = System.currentTimeMillis();
         this.isRead = isRead;
+        this.messageType = messageType;
     }
 
-    public String getSender() {
-        return sender;
-    }
-
-    public String getRecipient() {
-        return recipient;
+    public int getMessageType() {
+        return messageType;
     }
 
     public String getMessage() {

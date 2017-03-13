@@ -6,13 +6,12 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="19dp"
-        android:text="Sender"
-        android:id="@+id/chat_row_recipient"/>
+        android:text="user"
+        android:id="@+id/chat_row_user"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:layout_below="@id/chat_row_recipient"
         android:orientation="horizontal">
 
         <TextView

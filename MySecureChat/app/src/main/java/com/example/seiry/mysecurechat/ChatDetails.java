@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class ChatDetails extends AppCompatActivity {
     private String TAG = "ChatDetails";
 
@@ -20,12 +22,7 @@ public class ChatDetails extends AppCompatActivity {
         String recipients = intent.getStringExtra("recipients");
 
         // This is useless, we will use database later
-        for (Message message: ChatList.messages) {
-
-            Log.v(TAG, message.getRecipient() + " " + recipients + " " );
-            if (message.getRecipient().equals(recipients)) {
-                recipient.setText(message.getRecipient());
-            }
-        }
+        ArrayList<Message> messages = ChatList.messages.get(recipients);
+        recipient.setText(recipients);
     }
 }

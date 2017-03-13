@@ -14,14 +14,19 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.lang.reflect.Array;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ChatList extends AppCompatActivity {
 
-    public static ArrayList<Message> messages = new ArrayList<Message>();
+    public static LinkedHashMap<String, ArrayList<Message>> messages = new LinkedHashMap();
 
     private SwipeRefreshLayout refreshLayout;
     private RecyclerView mRecyclerView;
@@ -34,9 +39,37 @@ public class ChatList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
 
-        // Populate messages for now
-        messages.add(new Message("steven", "test", "hi", true));
-        messages.add(new Message("steven", "gaben", "praise the gaben", true));
+        // Populate messages manually, later we will use database
+        Calendar cal = Calendar.getInstance();
+
+        messages.put("steveJob", new ArrayList<Message>());
+
+        // Latest message is on the first index
+        cal.set(2017, 3, 13, 14, 22);
+        messages.get("steveJob").add(
+                new Message("Awesome fun man", cal.getTime().getTime(),
+                        true, Message.Type.INCOMING)
+        );
+        cal.set(2017, 3, 13, 14, 20);
+        messages.get("steveJob").add(
+                new Message("Hi there, having fun up there?", cal.getTime().getTime(),
+                        true, Message.Type.OUTGOING)
+        );
+
+
+        messages.put("gaben", new ArrayList<Message>());
+        cal.set(2017, 3, 13, 14, 32);
+        messages.get("gaben").add(
+                new Message("Sure mate, wait for the sales", cal.getTime().getTime(),
+                        true, Message.Type.INCOMING)
+        );
+        cal.set(2017, 3, 13, 14, 30);
+        messages.get("gaben").add(
+                new Message("Hi GabeN, can we get more discount?", cal.getTime().getTime(),
+                        true, Message.Type.OUTGOING)
+        );
+
+
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
@@ -70,7 +103,7 @@ public class ChatList extends AppCompatActivity {
 
 
 class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder>{
-    private ArrayList<Message> messages;
+    public static LinkedHashMap<String, ArrayList<Message>> messages;
 
     class MessageHolder extends RecyclerView.ViewHolder {
         public TextView recipientText;
@@ -80,7 +113,7 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder>{
         public MessageHolder(View v) {
             super(v);
 
-            recipientText = (TextView) v.findViewById(R.id.chat_row_recipient);
+            recipientText = (TextView) v.findViewById(R.id.chat_row_user);
             messageText = (TextView) v.findViewById(R.id.chat_row_message);
             createdText = (TextView) v.findViewById(R.id.chat_row_time);
 
@@ -89,7 +122,17 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder>{
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(view.getContext(), ChatDetails.class);
-                    intent.putExtra("recipients", messages.get(getAdapterPosition()).getRecipient());
+
+                    // Look for the correct user
+                    // THIS IS NOT GOOD AT ALL, WE'LL REPLACE THIS WITH DB CALL LATER
+                    Integer counter = 0;
+                    String currentUser = "DEFAULT";
+                    for (String user: messages.keySet()) {
+                        currentUser = user;
+                        if (counter == getAdapterPosition()) {break;}
+                        counter++;
+                    }
+                    intent.putExtra("recipients", currentUser);
                     view.getContext().startActivity(intent);
                 }
             });
@@ -106,14 +149,27 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder>{
 
     @Override
     public void onBindViewHolder(MessageHolder holder, int position) {
-        // Set all the variables to the respective components
-        Message message = messages.get(position);
-        holder.recipientText.setText(message.getRecipient());
-        holder.messageText.setText(message.getMessage());
+        // Look for the correct user and message list
+        // THIS IS NOT GOOD AT ALL, WE'LL REPLACE THIS WITH DB CALL LATER
+        Integer counter = 0;
+        String currentUser = "DEFAULT";
+        ArrayList<Message> userMessages = new ArrayList<>();
+        for (Map.Entry<String, ArrayList<Message>> entry: messages.entrySet()) {
+            currentUser = entry.getKey();
+            userMessages = entry.getValue();
+
+            if (counter == position) {break;}
+            counter++;
+        }
+
+
+        // Set all the variables to the respective component
+        holder.recipientText.setText(currentUser);
+        holder.messageText.setText(userMessages.get(0).getMessage());
 
         // Change unix timestamp to Hour:Minute format
         SimpleDateFormat formatter = new SimpleDateFormat("hh:mm");
-        holder.createdText.setText(formatter.format(new Date(message.getCreated())));
+        holder.createdText.setText(formatter.format(new Date(userMessages.get(0).getCreated())));
     }
 
     @Override
@@ -121,7 +177,7 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder>{
         return messages.size();
     }
 
-    public MessageAdapter(ArrayList messages) {
+    public MessageAdapter(LinkedHashMap messages) {
         this.messages = messages;
     }
 
