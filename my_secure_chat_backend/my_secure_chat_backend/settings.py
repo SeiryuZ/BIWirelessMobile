@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'rest_framework.authtoken',
+
+    'my_secure_chat_backend.apps.secure_messages',
 ]
 
 MIDDLEWARE = [
