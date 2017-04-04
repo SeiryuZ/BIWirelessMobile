@@ -3,6 +3,7 @@ package com.example.seiry.mysecurechat;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 /**
@@ -18,6 +19,7 @@ public class ChatRefresherService extends IntentService {
     public ChatRefresherService() {
         super("ChatRefresherService");
     }
+    private Context context;
 
     /**
      * Starts this service to perform action Foo with the given parameters. If
@@ -54,6 +56,7 @@ public class ChatRefresherService extends IntentService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
         Log.v(TAG, "Finished refresh");
     }
 

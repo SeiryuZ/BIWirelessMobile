@@ -11,14 +11,13 @@
     tools:context="com.example.seiry.mysecurechat.ChatDetails">
 
 
-    <EditText
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
         android:text="Chat Details"
         android:ems="10"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/editText" />
+        android:id="@+id/chatRecipient" />
 </RelativeLayout>
