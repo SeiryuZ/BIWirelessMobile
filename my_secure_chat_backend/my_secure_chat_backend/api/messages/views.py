@@ -40,3 +40,19 @@ class Index(APIView):
         messages = messages.order_by('id')
         serializers = MessageSerializer(messages, many=True)
         return Response({"messages": serializers.data}, status=status.HTTP_200_OK)
+
+
+class Add(APIView):
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        recipient = User.objects.get(username=request.data['recipient'])
+        sender = User.objects.get(username=request.data['sender'])
+        message = Message.objects.create(
+            recipient=recipient,
+            sender=sender,
+            message=request.data['message']
+        )
+        serializers = MessageSerializer(message)
+        return Response({"message": serializers.data}, status=status.HTTP_200_OK)
