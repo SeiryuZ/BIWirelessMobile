@@ -1,20 +1,45 @@
 package com.example.seiry.mysecurechat;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.provider.Settings;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.w3c.dom.Text;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.Security;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,9 +49,22 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
+
 public class ChatList extends AppCompatActivity {
 
-    public static LinkedHashMap<String, ArrayList<Message>> messages = new LinkedHashMap();
+    private static String TAG = "CHAT LIST";
+    public static RealmResults<Message> messages;
+    private LinkedHashMap<String, Message> chatList = new LinkedHashMap<>();
 
     private SwipeRefreshLayout refreshLayout;
     private RecyclerView mRecyclerView;
@@ -39,38 +77,6 @@ public class ChatList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
 
-        // Populate messages manually, later we will use database
-        Calendar cal = Calendar.getInstance();
-
-        messages.put("steveJob", new ArrayList<Message>());
-
-        // Latest message is on the first index
-        cal.set(2017, 3, 13, 14, 22);
-        messages.get("steveJob").add(
-                new Message("Awesome fun man", cal.getTime().getTime(),
-                        true, Message.Type.INCOMING)
-        );
-        cal.set(2017, 3, 13, 14, 20);
-        messages.get("steveJob").add(
-                new Message("Hi there, having fun up there?", cal.getTime().getTime(),
-                        true, Message.Type.OUTGOING)
-        );
-
-
-        messages.put("gaben", new ArrayList<Message>());
-        cal.set(2017, 3, 13, 14, 32);
-        messages.get("gaben").add(
-                new Message("Sure mate, wait for the sales", cal.getTime().getTime(),
-                        true, Message.Type.INCOMING)
-        );
-        cal.set(2017, 3, 13, 14, 30);
-        messages.get("gaben").add(
-                new Message("Hi GabeN, can we get more discount?", cal.getTime().getTime(),
-                        true, Message.Type.OUTGOING)
-        );
-
-
-
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
         // use this setting to improve performance if you know that changes
@@ -81,12 +87,18 @@ public class ChatList extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+        // Query database
+        Realm.init(ChatList.this);
+        Realm realm = Realm.getDefaultInstance();
+        messages = realm.where(Message.class).findAll();
+        buildChatList();
+
         // specify an adapter
-        mAdapter = new MessageAdapter(messages);
+        mAdapter = new MessageAdapter(chatList);
         mRecyclerView.setAdapter(mAdapter);
 
         // Bind refresh swipe
-        refreshLayout =  (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -96,14 +108,107 @@ public class ChatList extends AppCompatActivity {
     }
 
     public void refreshChat() {
-        ChatRefresherService.startActionRefresh(this);
-        refreshLayout.setRefreshing(false);
+//        ChatRefresherService.startActionRefresh(this);
+
+        Log.v(TAG, "LOGGING IN");
+        String url = "http://192.168.1.107:8000/api/messages/index/";
+
+        Log.v(TAG, "CURRENT MESSAGES");
+        // Initialize Realm
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.v(TAG, "Response: " + response.toString());
+                        refreshLayout.setRefreshing(false);
+
+                        try {
+                            JSONArray messages = response.getJSONArray("messages");
+                            for (int i = 0; i < messages.length(); i++) {
+                                JSONObject message = messages.getJSONObject(i);
+
+                                final Message localMessage = new Message();
+                                localMessage.setId(message.getInt("id"));
+                                localMessage.setRecipient(message.getString("recipient"));
+                                localMessage.setSender(message.getString("sender"));
+                                localMessage.setMessages(message.getString("message"));
+                                localMessage.setCreated(message.getInt("created"));
+
+                                // Initialize Realm
+                                Realm.init(ChatList.this);
+                                Realm realm = Realm.getDefaultInstance();
+                                realm.executeTransaction(new Realm.Transaction(){
+                                    @Override
+                                    public void execute(Realm realm) {
+                                        realm.copyToRealmOrUpdate(localMessage);
+                                    }
+                                });
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        Realm.init(ChatList.this);
+                        Realm realm = Realm.getDefaultInstance();
+                        messages = realm.where(Message.class).findAll();
+                        buildChatList();
+                        mAdapter.notifyDataSetChanged();
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO Auto-generated method stub
+                        Log.v(TAG, "MESSAGES ERROR " + error.getMessage());
+                        refreshLayout.setRefreshing(false);
+
+                        NetworkResponse response = error.networkResponse;
+                        String errorBody = new String(response.data);
+
+                        Toast toast = Toast.makeText(ChatList.this, errorBody, Toast.LENGTH_LONG);
+                        toast.show();
+                    }
+                }) {
+
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                SharedPreferences preference = getSharedPreferences("SECURECHAT", Context.MODE_PRIVATE);
+                String token = preference.getString("TOKEN", "");
+                params.put("Authorization", "Token " + token);
+                return params;
+            }
+        };
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(jsObjRequest);
+    }
+
+
+
+    public void buildChatList() {
+        SharedPreferences preference = getSharedPreferences("SECURECHAT", Context.MODE_PRIVATE);
+        String activeUsername = preference.getString("ACTIVE_USER", "");
+
+        // Parse each messages to build chatlist
+        for (Message message: messages){
+
+            Log.v("ADAPTER", message.toString());
+
+            if (!message.sender.equals(activeUsername)) {
+                chatList.put(message.sender, message);
+            } else {
+                chatList.put(message.recipient, message);
+            }
+        }
     }
 }
 
 
-class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder>{
-    public static LinkedHashMap<String, ArrayList<Message>> messages;
+class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder> {
+    private LinkedHashMap<String, Message> chatList = new LinkedHashMap<>();
 
     class MessageHolder extends RecyclerView.ViewHolder {
         public TextView recipientText;
@@ -127,9 +232,11 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder>{
                     // THIS IS NOT GOOD AT ALL, WE'LL REPLACE THIS WITH DB CALL LATER
                     Integer counter = 0;
                     String currentUser = "DEFAULT";
-                    for (String user: messages.keySet()) {
+                    for (String user : chatList.keySet()) {
                         currentUser = user;
-                        if (counter == getAdapterPosition()) {break;}
+                        if (counter == getAdapterPosition()) {
+                            break;
+                        }
                         counter++;
                     }
                     intent.putExtra("recipients", currentUser);
@@ -150,36 +257,35 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder>{
     @Override
     public void onBindViewHolder(MessageHolder holder, int position) {
         // Look for the correct user and message list
-        // THIS IS NOT GOOD AT ALL, WE'LL REPLACE THIS WITH DB CALL LATER
         Integer counter = 0;
         String currentUser = "DEFAULT";
-        ArrayList<Message> userMessages = new ArrayList<>();
-        for (Map.Entry<String, ArrayList<Message>> entry: messages.entrySet()) {
+        Message userMessage = null;
+        for (Map.Entry<String, Message> entry : chatList.entrySet()) {
             currentUser = entry.getKey();
-            userMessages = entry.getValue();
+            userMessage = entry.getValue();
 
-            if (counter == position) {break;}
+            if (counter == position) {
+                break;
+            }
             counter++;
         }
 
-
         // Set all the variables to the respective component
         holder.recipientText.setText(currentUser);
-        holder.messageText.setText(userMessages.get(0).getMessage());
+        holder.messageText.setText(Utils.getInstance().decrypt(userMessage.messages));
 
         // Change unix timestamp to Hour:Minute format
         SimpleDateFormat formatter = new SimpleDateFormat("hh:mm");
-        holder.createdText.setText(formatter.format(new Date(userMessages.get(0).getCreated())));
+        holder.createdText.setText(formatter.format(new Date((long)userMessage.created * 1000)));
     }
 
     @Override
     public int getItemCount() {
-        return messages.size();
-    }
-
-    public MessageAdapter(LinkedHashMap messages) {
-        this.messages = messages;
+        return chatList.size();
     }
 
 
+    public MessageAdapter(LinkedHashMap<String, Message> chatList) {
+        this.chatList = chatList;
+    }
 }

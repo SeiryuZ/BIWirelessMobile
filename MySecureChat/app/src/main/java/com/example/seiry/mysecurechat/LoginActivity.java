@@ -53,13 +53,14 @@ public class LoginActivity extends AppCompatActivity {
     public void loginButtonPressed(View view) {
 
         Log.v(TAG, "LOGGING IN");
-        String url = "http://106.186.116.87:8123/api/auth/login/";
+//        String url = "http://106.186.116.87:8123/api/auth/login/";
+        String url = "http://192.168.1.107:8000/api/auth/login/";
 
         //Login request
         JSONObject body = new JSONObject();
         try {
-            body.put("username", username.getText());
-            body.put("password", password.getText());
+            body.put("username", username.getText().toString());
+            body.put("password", password.getText().toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -76,7 +77,10 @@ public class LoginActivity extends AppCompatActivity {
 
                             SharedPreferences preference = getSharedPreferences("SECURECHAT", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = preference.edit();
+
+                            // Also save the active user name
                             editor.putString("TOKEN", token);
+                            editor.putString("ACTIVE_USER", username.getText().toString());
                             editor.commit();
 
 
