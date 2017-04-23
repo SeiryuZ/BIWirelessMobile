@@ -75,7 +75,7 @@ public class ChatDetails extends AppCompatActivity {
     public void sendMessage(View view) {
         String EncryptedMessage = Utils.getInstance().encrypt(messagetTextView.getText().toString());
 
-        String url = "http://192.168.1.107:8000/api/messages/add/";
+        String url = "http://106.186.116.87:8123/api/messages/add/";
 
         Log.v(TAG, "SEND MESSAGE");
         // Initialize Realm

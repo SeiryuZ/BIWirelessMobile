@@ -53,8 +53,7 @@ public class LoginActivity extends AppCompatActivity {
     public void loginButtonPressed(View view) {
 
         Log.v(TAG, "LOGGING IN");
-//        String url = "http://106.186.116.87:8123/api/auth/login/";
-        String url = "http://192.168.1.107:8000/api/auth/login/";
+        String url = "http://106.186.116.87:8123/api/auth/login/";
 
         //Login request
         JSONObject body = new JSONObject();

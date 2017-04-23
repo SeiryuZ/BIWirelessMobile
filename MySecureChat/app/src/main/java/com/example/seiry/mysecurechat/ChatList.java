@@ -107,11 +107,21 @@ public class ChatList extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Realm.init(ChatList.this);
+        Realm realm = Realm.getDefaultInstance();
+        messages = realm.where(Message.class).findAll();
+        buildChatList();
+        mAdapter.notifyDataSetChanged();
+    }
+
     public void refreshChat() {
 //        ChatRefresherService.startActionRefresh(this);
 
         Log.v(TAG, "LOGGING IN");
-        String url = "http://192.168.1.107:8000/api/messages/index/";
+        String url = "http://106.186.116.87:8123/api/messages/index/";
 
         Log.v(TAG, "CURRENT MESSAGES");
         // Initialize Realm
