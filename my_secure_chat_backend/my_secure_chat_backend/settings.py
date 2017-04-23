@@ -131,5 +131,5 @@ REST_FRAMEWORK = {
 
 STATIC_URL = '/static/'
 
-DEBUG = False
+# DEBUG = False
 APPEND_SLASH = True
