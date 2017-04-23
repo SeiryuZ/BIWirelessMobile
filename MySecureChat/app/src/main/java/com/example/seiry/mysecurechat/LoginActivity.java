@@ -1,6 +1,8 @@
 package com.example.seiry.mysecurechat;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,88 +39,69 @@ public class LoginActivity extends AppCompatActivity {
 
         username = (EditText) findViewById(R.id.EmailEditText);
         password = (EditText) findViewById(R.id.PasswordEditText);
+
+
+        // Skip this page if we have token saved in the prefernce
+        SharedPreferences preference = getSharedPreferences("SECURECHAT", Context.MODE_PRIVATE);
+        if (preference.getString("TOKEN", "") != "") {
+            Intent intent = new Intent(LoginActivity.this, ChatList.class);
+            startActivity(intent);
+        }
+
     }
 
     public void loginButtonPressed(View view) {
 
         Log.v(TAG, "LOGGING IN");
         String url = "http://106.186.116.87:8123/api/auth/login/";
-//      url = "http://requestb.in/qpqej1qp";
 
         //Login request
-//        JSONObject body = new JSONObject();
-//        try {
-//            body.put("username", username.getText());
-//            body.put("password", password.getText());
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-//                (Request.Method.POST, url, body, new Response.Listener<JSONObject>() {
-//
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        Log.v(TAG, "Response: " + response.toString());
-//                        try {
-//                            // Save this token for next requests
-//                            String token = response.getString("token");
-//                            Log.v(TAG, token);
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }, new Response.ErrorListener() {
-//
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        // TODO Auto-generated method stub
-//                        NetworkResponse response = error.networkResponse;
-//                        String errorBody = new String(response.data);
-//
-//                        Toast toast = Toast.makeText(LoginActivity.this, errorBody, Toast.LENGTH_LONG);
-//                        toast.show();
-//                        Log.v(TAG, "LOGIN ERROR " + errorBody);
-//                    }
-//                });
+        JSONObject body = new JSONObject();
+        try {
+            body.put("username", username.getText());
+            body.put("password", password.getText());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.POST, url, body, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.v(TAG, "Response: " + response.toString());
+                        try {
+                            // Save this token for next requests
+                            String token = response.getString("token");
+                            Log.v(TAG, token);
+
+                            SharedPreferences preference = getSharedPreferences("SECURECHAT", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = preference.edit();
+                            editor.putString("TOKEN", token);
+                            editor.commit();
 
 
-        // Auth Test Token
-//        url = "http://106.186.116.87:8123/api/auth/token-test/";
-//        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-//                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-//
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        Log.v(TAG, "Response: " + response.toString());
-//                    }
-//                }, new Response.ErrorListener() {
-//
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        // TODO Auto-generated method stub
-//                        NetworkResponse response = error.networkResponse;
-//                        String errorBody = new String(response.data);
-//
-//                        Toast toast = Toast.makeText(LoginActivity.this, errorBody, Toast.LENGTH_LONG);
-//                        toast.show();
-//                        Log.v(TAG, "AUTH TEST ERROR " + errorBody);
-//                    }
-//                }) {
-//
-//
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError {
-//                Map<String, String>  params = new HashMap<String, String>();
-//                String token = "4d90ae39f8e70fa146d44c63a014963af3b45e25";
-//                params.put("Authorization", "Token "+ token);
-//                return params;
-//            }
-//        };
+                            Intent intent = new Intent(LoginActivity.this, ChatList.class);
+                            startActivity(intent);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
 
-//        RequestQueue queue = Volley.newRequestQueue(this);
-//        queue.add(jsObjRequest);
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO Auto-generated method stub
+                        Log.v(TAG, "LOGIN ERROR " + error.getMessage());
 
-        Intent intent = new Intent(this, ChatList.class);
-        startActivity(intent);
+                        NetworkResponse response = error.networkResponse;
+                        String errorBody = new String(response.data);
+
+                        Toast toast = Toast.makeText(LoginActivity.this, errorBody, Toast.LENGTH_LONG);
+                        toast.show();
+                    }
+                });
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(jsObjRequest);
     }
 }
