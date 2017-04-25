@@ -1,5 +1,12 @@
 # Peer review guide
 
+## Preface
+
+  * Class participation mark is individual
+  * Weight is 20% of total mark
+  * Duration: week 8 ~ week 12
+
+------
 
 ## 1. Make sure you are on their correct branch, then you can browse their code on the repository's homepage
   ![Correct branch](DemoTeaching/images/peer-review1.png)
