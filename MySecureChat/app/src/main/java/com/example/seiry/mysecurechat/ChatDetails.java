@@ -1,9 +1,16 @@
 package com.example.seiry.mysecurechat;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -51,6 +58,7 @@ public class ChatDetails extends AppCompatActivity {
     private RecyclerView conversationView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private Location currentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,13 +76,37 @@ public class ChatDetails extends AppCompatActivity {
         // specify an adapter
         String activeUser = getSharedPreferences("SECURECHAT", Context.MODE_PRIVATE).getString("ACTIVE_USER", "");
         conversationView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new ConversationAdapter(this.conversation, activeUser);
+        mAdapter = new ConversationAdapter(this.conversation, activeUser, this);
         conversationView.setAdapter(mAdapter);
 
 
         // refresh the messages
         refreshMessages();
 
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                currentLocation = location;
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
+            public void onProviderEnabled(String provider) {
+            }
+
+            public void onProviderDisabled(String provider) {
+            }
+        };
+
+        // Register the listener with the Location Manager to receive location updates
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.v(TAG, "NO PERMISSION FOR LOCATION, attempt to request, if fail button will do nothing");
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
     }
 
     public void refreshMessages() {
@@ -95,9 +127,7 @@ public class ChatDetails extends AppCompatActivity {
 
     }
 
-    public void sendMessage(View view) {
-        String EncryptedMessage = Utils.getInstance().encrypt(messagetTextView.getText().toString());
-
+    public void send(String text) {
         String url = "http://106.186.116.87:8123/api/messages/add/";
 
         Log.v(TAG, "SEND MESSAGE");
@@ -108,7 +138,7 @@ public class ChatDetails extends AppCompatActivity {
             SharedPreferences preference = getSharedPreferences("SECURECHAT", Context.MODE_PRIVATE);
             body.put("sender", preference.getString("ACTIVE_USER", ""));
             body.put("recipient", OtherUsername);
-            body.put("message", Utils.getInstance().encrypt(messagetTextView.getText().toString()));
+            body.put("message", text);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -140,8 +170,6 @@ public class ChatDetails extends AppCompatActivity {
                             });
 
                             refreshMessages();
-
-                            messagetTextView.setText("");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -167,7 +195,23 @@ public class ChatDetails extends AppCompatActivity {
 
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(jsObjRequest);
+    }
 
+
+    public void sendMessage(View view) {
+        String encryptedMessage = Utils.getInstance().encrypt(messagetTextView.getText().toString());
+        send(encryptedMessage);
+        messagetTextView.setText("");
+    }
+
+    public void locationButtonPressed(View view) {
+        Log.v(TAG, "SENDING LOCATION......");
+        if (currentLocation == null) {
+            Toast toast = Toast.makeText(ChatDetails.this, "Cannot get current location, try again later", Toast.LENGTH_LONG);
+            toast.show();
+            return;
+        }
+        send(Utils.getInstance().encrypt("GPS: "+currentLocation.getLatitude() +"," + currentLocation.getLongitude()));
     }
 
 }
@@ -175,6 +219,7 @@ public class ChatDetails extends AppCompatActivity {
 
 class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.ConversationHolder> {
     private ArrayList<Message> conversation = new ArrayList<>();
+    private Context context = null;
     private String activeUser = "";
 
     class ConversationHolder extends RecyclerView.ViewHolder {
@@ -188,30 +233,7 @@ class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.Conve
             recipientText = (TextView) v.findViewById(R.id.chat_row_user);
             messageText = (TextView) v.findViewById(R.id.chat_row_message);
             createdText = (TextView) v.findViewById(R.id.chat_row_time);
-
-            // Set listener to open chat details correctly
-//            v.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    Intent intent = new Intent(view.getContext(), ChatDetails.class);
-//
-//                    // Look for the correct user
-//                    // THIS IS NOT GOOD AT ALL, WE'LL REPLACE THIS WITH DB CALL LATER
-//                    Integer counter = 0;
-//                    String currentUser = "DEFAULT";
-//                    for (String user : chatList.keySet()) {
-//                        currentUser = user;
-//                        if (counter == getAdapterPosition()) {
-//                            break;
-//                        }
-//                        counter++;
-//                    }
-//                    intent.putExtra("recipients", currentUser);
-//                    view.getContext().startActivity(intent);
-//                }
-//            });
         }
-
     }
 
     @Override
@@ -230,7 +252,28 @@ class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.Conve
         }
 
         holder.recipientText.setText(message.sender);
-        holder.messageText.setText(Utils.getInstance().decrypt(message.messages));
+
+        // decrypt message
+        final String decryptedMessage = Utils.getInstance().decrypt(message.messages);
+        holder.messageText.setText(decryptedMessage);
+
+        if (decryptedMessage.contains("GPS:")) {
+            holder.messageText.setOnClickListener(new View.OnClickListener(){
+
+                @Override
+                public void onClick(View v) {
+                    // parse GPS message
+                    String location = decryptedMessage.substring(4, decryptedMessage.length());
+                    Log.v("ADAPTER", "OPEN GPS" + location);
+
+                    // Open up any activity that can handle this url, be it browser / google map
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?q=" + location));
+                    context.startActivity(browserIntent);
+                }
+            });
+        } else {
+            holder.messageText.setOnClickListener(null);
+        }
 
         // Change unix timestamp to Hour:Minute format
         SimpleDateFormat formatter = new SimpleDateFormat("hh:mm");
@@ -244,9 +287,10 @@ class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.Conve
     }
 
 
-    public ConversationAdapter(ArrayList<Message> conversation, String activeUser) {
+    public ConversationAdapter(ArrayList<Message> conversation, String activeUser, Context context) {
         this.conversation = conversation;
         this.activeUser = activeUser;
+        this.context = context;
     }
 }
 
