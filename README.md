@@ -4,3 +4,4 @@
 ## Links
   * [FAQ] (https://github.com/SeiryuZ/BIWirelessMobile/blob/master/faq.MD)
   * [Git cheatsheet](https://github.com/SeiryuZ/BIWirelessMobile/blob/master/git-cheatsheet.md)
+  * [Peer review](https://github.com/SeiryuZ/BIWirelessMobile/blob/master/peer-review.md)
