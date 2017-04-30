@@ -58,8 +58,8 @@ public class LoginActivity extends AppCompatActivity {
         //Login request
         JSONObject body = new JSONObject();
         try {
-            body.put("username", username.getText());
-            body.put("password", password.getText());
+            body.put("username", username.getText().toString());
+            body.put("password", password.getText().toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -76,7 +76,10 @@ public class LoginActivity extends AppCompatActivity {
 
                             SharedPreferences preference = getSharedPreferences("SECURECHAT", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = preference.edit();
+
+                            // Also save the active user name
                             editor.putString("TOKEN", token);
+                            editor.putString("ACTIVE_USER", username.getText().toString());
                             editor.commit();
 
 
