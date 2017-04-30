@@ -6,8 +6,13 @@ import android.content.SharedPreferences;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,7 +30,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -36,13 +43,14 @@ import io.realm.RealmResults;
 
 public class ChatDetails extends AppCompatActivity {
     private String TAG = "ChatDetails";
-    private LinkedList<Message> messages;
+    private ArrayList<Message> conversation = new ArrayList<>();
 
     private EditText messagetTextView;
-    private TextView conversationTextView;
     private String OtherUsername;
-    String conversation = "";
 
+    private RecyclerView conversationView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,26 +58,41 @@ public class ChatDetails extends AppCompatActivity {
         setContentView(R.layout.activity_chat_details);
 
         // Bind elements
-        conversationTextView = (TextView) findViewById(R.id.conversationTextView);
+        conversationView = (RecyclerView) findViewById(R.id.conversationView);
         messagetTextView = (EditText) findViewById(R.id.messageTextView);
 
         // Get relevant information from intent
         Intent intent = getIntent();
         OtherUsername = intent.getStringExtra("recipients");
 
+        // specify an adapter
+        String activeUser = getSharedPreferences("SECURECHAT", Context.MODE_PRIVATE).getString("ACTIVE_USER", "");
+        conversationView.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new ConversationAdapter(this.conversation, activeUser);
+        conversationView.setAdapter(mAdapter);
+
+
+        // refresh the messages
+        refreshMessages();
+
+    }
+
+    public void refreshMessages() {
         // Query database and build chat conversation
         Realm.init(ChatDetails.this);
         Realm realm = Realm.getDefaultInstance();
         RealmResults<Message> messages = realm.where(Message.class).findAll();
+        messages = messages.sort("created");
 
+        // update conversation arraylist
+        this.conversation.clear();
 
-        // latest messsage on top
         for (Message message: messages) {
-            if (message.recipient.equals(OtherUsername) || message.sender.equals(OtherUsername)) {
-                conversation = Utils.getInstance().decrypt(message.messages) + "     \n" + conversation;
-            }
+            this.conversation.add(0, message);
         }
-        conversationTextView.setText(conversation);
+
+        mAdapter.notifyDataSetChanged();
+
     }
 
     public void sendMessage(View view) {
@@ -94,7 +117,7 @@ public class ChatDetails extends AppCompatActivity {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.v(TAG, "Response: " + response.toString());
+//                        Log.v(TAG, "Response: " + response.toString());
                         JSONObject message = null;
                         try {
                             message = response.getJSONObject("message");
@@ -116,8 +139,7 @@ public class ChatDetails extends AppCompatActivity {
                                 }
                             });
 
-                            conversation = Utils.getInstance().decrypt(localMessage.messages) + "     \n" + conversation;
-                            conversationTextView.setText(conversation);
+                            refreshMessages();
 
                             messagetTextView.setText("");
                         } catch (JSONException e) {
@@ -149,3 +171,82 @@ public class ChatDetails extends AppCompatActivity {
     }
 
 }
+
+
+class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.ConversationHolder> {
+    private ArrayList<Message> conversation = new ArrayList<>();
+    private String activeUser = "";
+
+    class ConversationHolder extends RecyclerView.ViewHolder {
+        public TextView recipientText;
+        public TextView messageText;
+        public TextView createdText;
+
+        public ConversationHolder(View v) {
+            super(v);
+
+            recipientText = (TextView) v.findViewById(R.id.chat_row_user);
+            messageText = (TextView) v.findViewById(R.id.chat_row_message);
+            createdText = (TextView) v.findViewById(R.id.chat_row_time);
+
+            // Set listener to open chat details correctly
+//            v.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    Intent intent = new Intent(view.getContext(), ChatDetails.class);
+//
+//                    // Look for the correct user
+//                    // THIS IS NOT GOOD AT ALL, WE'LL REPLACE THIS WITH DB CALL LATER
+//                    Integer counter = 0;
+//                    String currentUser = "DEFAULT";
+//                    for (String user : chatList.keySet()) {
+//                        currentUser = user;
+//                        if (counter == getAdapterPosition()) {
+//                            break;
+//                        }
+//                        counter++;
+//                    }
+//                    intent.putExtra("recipients", currentUser);
+//                    view.getContext().startActivity(intent);
+//                }
+//            });
+        }
+
+    }
+
+    @Override
+    public ConversationHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        // Create new view for each row
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_list_row, parent, false);
+        return new ConversationHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(ConversationHolder holder, int position) {
+        Message message = conversation.get(position);
+
+        if (message.sender.equals(this.activeUser)) {
+            holder.messageText.setGravity(Gravity.RIGHT);
+        }
+
+        holder.recipientText.setText(message.sender);
+        holder.messageText.setText(Utils.getInstance().decrypt(message.messages));
+
+        // Change unix timestamp to Hour:Minute format
+        SimpleDateFormat formatter = new SimpleDateFormat("hh:mm");
+        holder.createdText.setText(formatter.format(new Date((long)message.created * 1000)));
+    }
+
+
+    @Override
+    public int getItemCount() {
+        return conversation.size();
+    }
+
+
+    public ConversationAdapter(ArrayList<Message> conversation, String activeUser) {
+        this.conversation = conversation;
+        this.activeUser = activeUser;
+    }
+}
+
