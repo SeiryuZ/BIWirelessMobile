@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -54,6 +56,8 @@ public class ChatDetails extends AppCompatActivity {
 
     private EditText messagetTextView;
     private String OtherUsername;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
 
     private RecyclerView conversationView;
     private RecyclerView.Adapter mAdapter;
@@ -83,14 +87,15 @@ public class ChatDetails extends AppCompatActivity {
         // refresh the messages
         refreshMessages();
 
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        LocationListener locationListener = new LocationListener() {
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
                 currentLocation = location;
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
+
             }
 
             public void onProviderEnabled(String provider) {
@@ -107,6 +112,16 @@ public class ChatDetails extends AppCompatActivity {
             return;
         }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Always remove location listener when not used to preserve battery
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.removeUpdates(locationListener);
     }
 
     public void refreshMessages() {
